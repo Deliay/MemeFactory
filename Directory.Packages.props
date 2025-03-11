@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
+    <Version>1.0.0-alpha.1</Version>
+    <Authors>ZeroAsh</Authors>
+    <PackageTags>meme;</PackageTags>
+    <RepositoryUrl>https://github.com/Deliay/MemeFactory</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>A meme processing utility that provides many tools to generate meme.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.7" />
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="SixLabors.ImageSharp.Drawing" Version="2.1.5" />
+  </ItemGroup>
+</Project>
