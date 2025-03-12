@@ -60,7 +60,7 @@ public static class Frames
 
     public static async IAsyncEnumerable<Frame> Slow(this IAsyncEnumerable<Frame> src, int times)
     {
-        var index = 1;
+        var index = 0;
         await foreach (var frame in src)
         {
             yield return frame with { Sequence = index++ };
@@ -94,7 +94,7 @@ public static class Frames
     public static IEnumerable<Frame> Loop(this IEnumerable<Frame> source, int times = 999)
     {
         List<Frame> cache = [];
-        var index = 1;
+        var index = 0;
         foreach (var item in source)
         {
             cache.Add(item);
