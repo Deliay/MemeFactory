@@ -36,7 +36,7 @@ public static class Composers
 
         if (proceedFrames.Count == 0) throw new ArgumentException("Invalid sequence count", nameof(frames));
         
-        if (proceedFrames.Count == 1) return MemeResult.Png(proceedFrames[0].Image);
+        if (proceedFrames.Count == 1) return MemeResult.Png(proceedFrames[0].Image.Clone(_ => {}));
         
         using var rootFrame = proceedFrames[0];
         using var clonedFrame = rootFrame.Image.Frames.CloneFrame(0);
