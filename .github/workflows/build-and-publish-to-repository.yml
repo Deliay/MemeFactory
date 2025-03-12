@@ -1,0 +1,42 @@
+name: MemeFactory 
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "MemeFactory.Core/**"
+      - "MemeFactory.sln"
+      - "LICENSE"
+      - "README.md"
+      - "Directory.Packages.props"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./MemeFactory.Core
+        
+      - name: Build
+        run: dotnet pack
+        working-directory: ./MemeFactory.Core
+        
+      - name: publish-to-nuget
+        run: dotnet nuget push **/*.nupkg --api-key=${{secrets.NUGET_KEY}} --skip-duplicate --source=https://api.nuget.org/v3/index.json
+        working-directory: ./MemeFactory.Core
+        
+      - name: publish-to-github
+        run: dotnet nuget push **/*.nupkg --api-key=${{secrets.GH_PACKAGE_KEY}} --skip-duplicate --source=https://nuget.pkg.github.com/Deliay/index.json
+        working-directory: ./MemeFactory.Core
+        
