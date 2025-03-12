@@ -91,4 +91,23 @@ public static class Frames
         }
     }
 
+    public static IEnumerable<Frame> Loop(this IEnumerable<Frame> source, int times = 999)
+    {
+        List<Frame> cache = [];
+        var index = 1;
+        foreach (var item in source)
+        {
+            cache.Add(item);
+            yield return item with { Sequence = index++ };
+        }
+
+        var currentTimes = 0;
+        while (currentTimes++ < times)
+        {
+            foreach (var item in cache)
+            {
+                yield return new Frame(index++, item.Image.Clone((_) => {}));
+            }
+        }
+    }
 }

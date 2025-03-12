@@ -30,7 +30,8 @@ public static class Composers
         };
     }
     
-    public static async ValueTask<MemeResult> AutoComposeAsync(this IAsyncEnumerable<Frame> frames, CancellationToken cancellationToken = default)
+    public static async ValueTask<MemeResult> AutoComposeAsync(this IAsyncEnumerable<Frame> frames,
+        CancellationToken cancellationToken = default)
     {
         var proceedFrames = await frames.ToListAsync(cancellationToken);
 
@@ -44,11 +45,14 @@ public static class Composers
 
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
-        templateImage.Frames[0].Metadata.GetGifMetadata().HasTransparency = false;
+        
         foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
         {
             templateImage.Frames.InsertFrame(index, proceedImage.Frames.RootFrame);
-            templateImage.Frames[index].Metadata.GetGifMetadata().HasTransparency = false;
+            var gifFrameMetadata = templateImage.Frames[index].Metadata.GetGifMetadata();
+            gifFrameMetadata.HasTransparency = false;
+            gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
+            gifFrameMetadata.FrameDelay = 0;
         }
 
         return MemeResult.Gif(templateImage);

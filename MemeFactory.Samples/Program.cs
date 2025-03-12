@@ -15,12 +15,13 @@ using var punchSequence = await Frames
     .ToSequenceAsync();
 
 // process
-using var result = await baseSequence  // layer 0: base sequence
+using var result = await baseSequence
     // compose the merry meme 
     .EachFrame(Composers.Draw(merry, Resizer.Auto, Layout.LeftBottom))
     // compose the punch meme sequence
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
         Composers.Draw(Resizer.Auto, Layout.LeftBottom))
+    .Rotation()
     // generate final image
     .AutoComposeAsync();
 
