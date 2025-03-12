@@ -29,6 +29,14 @@ public static class Composers
             return ValueTask.FromResult(f);
         };
     }
+
+    private static void SetupGifMetadata(this ImageFrame frame)
+    {
+        var gifFrameMetadata = frame.Metadata.GetGifMetadata();
+        gifFrameMetadata.FrameDelay = 0;
+        gifFrameMetadata.HasTransparency = false;
+        gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
+    }
     
     public static async ValueTask<MemeResult> AutoComposeAsync(this IAsyncEnumerable<Frame> frames,
         CancellationToken cancellationToken = default)
@@ -46,13 +54,11 @@ public static class Composers
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
         
+        templateImage.Frames.RootFrame.SetupGifMetadata();
         foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
         {
             templateImage.Frames.InsertFrame(index, proceedImage.Frames.RootFrame);
-            var gifFrameMetadata = templateImage.Frames[index].Metadata.GetGifMetadata();
-            gifFrameMetadata.HasTransparency = false;
-            gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
-            gifFrameMetadata.FrameDelay = 0;
+            templateImage.Frames[index].SetupGifMetadata();
         }
 
         return MemeResult.Gif(templateImage);
