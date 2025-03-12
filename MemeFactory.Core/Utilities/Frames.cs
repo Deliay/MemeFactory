@@ -2,6 +2,7 @@
 using MemeFactory.Core.Processing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace MemeFactory.Core.Utilities;
@@ -10,8 +11,11 @@ public static class Frames
 {
     public static Frame Copy(this ImageFrameCollection frameCollection, int sequence)
     {
-        var frame = frameCollection.CloneFrame(sequence);
-        return new Frame(sequence, frame);
+        using var frame = frameCollection.CloneFrame(sequence);
+        var newImage = new Image<Rgba32>(frame.Width, frame.Height);
+        newImage.Mutate(x => x.DrawImage(frame, 1.0f));
+        
+        return new Frame(sequence, newImage);
     }
     
     public static void CopyGifPropertiesTo(this ImageFrame src, ImageFrame dest)

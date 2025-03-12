@@ -19,7 +19,7 @@ using var result = await baseSequence  // layer 0: base sequence
     .EachFrame(Composers.Draw(merry, Resizer.Auto, Layout.LeftBottom))
     // compose the punch meme sequence
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
-        Composers.Draw(Resizer.Auto, Layout.RightCenter))
+        Composers.Draw(Resizer.Auto, Layout.LeftBottom))
     // generate final image
     .AutoComposeAsync();
 

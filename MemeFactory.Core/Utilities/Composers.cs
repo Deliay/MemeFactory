@@ -1,5 +1,6 @@
 ﻿using MemeFactory.Core.Processing;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Processing;
 
 namespace MemeFactory.Core.Utilities;
@@ -42,11 +43,12 @@ public static class Composers
 
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
-        
-        
+
+        templateImage.Frames[0].Metadata.GetGifMetadata().HasTransparency = false;
         foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
         {
             templateImage.Frames.InsertFrame(index, proceedImage.Frames.RootFrame);
+            templateImage.Frames[index].Metadata.GetGifMetadata().HasTransparency = false;
         }
 
         return MemeResult.Gif(templateImage);
