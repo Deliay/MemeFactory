@@ -39,11 +39,11 @@ public static class Composers
         if (proceedFrames.Count == 1) return MemeResult.Png(proceedFrames[0].Image);
         
         using var rootFrame = proceedFrames[0];
-        var templateImage = rootFrame.Image.Frames.CloneFrame(0);
+        using var clonedFrame = rootFrame.Image.Frames.CloneFrame(0);
+        var templateImage = clonedFrame.Clone(_ => { });
 
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
-
         templateImage.Frames[0].Metadata.GetGifMetadata().HasTransparency = false;
         foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
         {
