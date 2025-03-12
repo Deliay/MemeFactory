@@ -48,8 +48,7 @@ public static class Composers
         if (proceedFrames.Count == 1) return MemeResult.Png(proceedFrames[0].Image.Clone(_ => {}));
         
         using var rootFrame = proceedFrames[0];
-        using var clonedFrame = rootFrame.Image.Frames.CloneFrame(0);
-        var templateImage = clonedFrame.Clone(_ => { });
+        var templateImage = rootFrame.Image.Clone(_ => {});
 
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
