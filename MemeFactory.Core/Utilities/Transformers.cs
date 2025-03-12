@@ -18,7 +18,7 @@ public static class Transformers
             .Select(c =>  Algorithms.Lcm(allFrames.Count, c) / allFrames.Count)
             .Min() - 1;
         var baseSize = allFrames[0].Image.Size;
-        foreach (var frame in allFrames.Loop(total)) using (frame)
+        foreach (var frame in allFrames.Loop(total).ToList()) using (frame)
         {
             frame.Image.Mutate((ctx) => ctx.Rotate(deg * frame.Sequence - 1));
             var newFrame = new Image<Rgba32>(baseSize.Width, baseSize.Height);
