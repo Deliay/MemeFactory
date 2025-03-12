@@ -23,13 +23,12 @@ using var punchSequence = await Frames
 
 // process
 using var result = await baseSequence  // layer 0: base sequence
-    // layer 1: draw the merry meme into each frame in the base sequence
+    // compose the merry meme 
     .EachFrame(Composers.Draw(merry, Resizer.Auto, Layout.LeftBottom))
-    // layer 2: expand the punch sequence using the LCM result
-    // between the punch sequence and the base sequence.
+    // compose the punch meme sequence
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
         Composers.Draw(Resizer.Auto, Layout.RightCenter))
-    // compose all layers
+    // generate final image
     .AutoComposeAsync();
 
 // output
