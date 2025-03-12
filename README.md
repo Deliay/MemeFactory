@@ -43,7 +43,7 @@ using var punchSequence = await Frames
 using var result = await baseSequence  // layer 0: base sequence
     // compose each frame with an image
     .EachFrame(Composers.Draw(merry, Resizer.Auto, Layout.LeftBottom))
-    // compose tow sequence frame by frame
+    // compose two sequence frame by frame
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
         Composers.Draw(Resizer.Auto, Layout.RightCenter))
      // rotate all frame
