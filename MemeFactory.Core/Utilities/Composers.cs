@@ -43,10 +43,14 @@ public static class Composers
     {
         var proceedFrames = await frames.ToListAsync(cancellationToken);
 
-        if (proceedFrames.Count == 0) throw new ArgumentException("Invalid sequence count", nameof(frames));
-        
-        if (proceedFrames.Count == 1) return MemeResult.Png(proceedFrames[0].Image.Clone(_ => {}));
-        
+        switch (proceedFrames.Count)
+        {
+            case 0:
+                throw new ArgumentException("Invalid sequence count", nameof(frames));
+            case 1:
+                return MemeResult.Png(proceedFrames[0].Image.Clone(_ => {}));
+        }
+
         using var rootFrame = proceedFrames[0];
         var templateImage = rootFrame.Image.Clone(_ => {});
 

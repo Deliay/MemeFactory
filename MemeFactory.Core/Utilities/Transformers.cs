@@ -12,11 +12,21 @@ public static class Transformers
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
 
     {
-        var deg = 360f / circleTimes;
+        float deg;
+        var total = 0;
         var allFrames = await frames.ToListAsync(cancellationToken);
-        var total = Enumerable.Range(circleTimes - 2, 4)
-            .Select(c =>  Algorithms.Lcm(allFrames.Count, c) / allFrames.Count)
-            .Min() - 1;
+        if (allFrames.Count > circleTimes)
+        {
+            deg = (allFrames.Count * 1f / circleTimes) * 360f / allFrames.Count;
+        }
+        else
+        {
+            (total, circleTimes) = Enumerable.Range(circleTimes - 2, 4)
+                .Select(c => (Algorithms.Lcm(allFrames.Count, c) / allFrames.Count, c))
+                .MinBy(p => p.Item1);
+            deg = 360f / circleTimes;
+        }
+
         var baseSize = allFrames[0].Image.Size;
         foreach (var frame in allFrames.Loop(total).ToList()) using (frame)
         {
