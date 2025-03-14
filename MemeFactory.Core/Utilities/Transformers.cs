@@ -42,45 +42,45 @@ public static class Transformers
     }
 
     public static async IAsyncEnumerable<Frame> Slide(this IAsyncEnumerable<Frame> frames,
-        int directionHorizontal = 1, int directionVertical = 0, int totalMoves = 20,
+        int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 20,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var allFrames = await frames.ToListAsync(cancellationToken);
 
-        // padding to more than 20 frames when not enough
         var targetFrames = allFrames.Count;
-        if (targetFrames < totalMoves)
-        {
-            targetFrames = Convert.ToInt32(Math.Ceiling(1f * totalMoves * 2 / targetFrames)) * targetFrames;
-        }
-        var imageSize = allFrames[0].Image.Size;
         
-        var safeCircleCount = targetFrames / totalMoves;
-        var eachX = Convert.ToInt32((1f * imageSize.Width * safeCircleCount / targetFrames));
-        var eachY = Convert.ToInt32((1f * imageSize.Height * safeCircleCount / targetFrames));
-        var loopTimes = targetFrames / allFrames.Count - 1;
-
-        var safeFrameCount = totalMoves * safeCircleCount - 10;
-        var finalFrames = allFrames.Loop(loopTimes).ToList();
-        var halfFrameIndex = finalFrames.Count / 2;
-        var frameIndex = 0;
-        var gap = totalMoves / 2;
+        // calculate a LCM number between to make the frames smoooooth
+        (targetFrames, slidingFrames) = Enumerable.Range(slidingFrames - 5, 10)
+            .Select(c => (Algorithms.Lcm(targetFrames, c), c))
+            .MinBy(p => p.Item1);
+        var safeRepeatCount = targetFrames / slidingFrames;
+        
+        var imageSize = allFrames[0].Image.Size;
+        // get the distance each frame moved
+        var eachX = Convert.ToInt32((1f * imageSize.Width * safeRepeatCount / targetFrames));
+        var eachY = Convert.ToInt32((1f * imageSize.Height * safeRepeatCount / targetFrames));
+        
+        var sequenceExtraLoopTimes = targetFrames / allFrames.Count - 1;
+        var safeFrameCount = slidingFrames * safeRepeatCount - 10;
+        var finalSequence = allFrames.Loop(sequenceExtraLoopTimes).ToList();
+        var currentFrameIndex = 0;
+        var slidingGap = slidingFrames / 2;
         for (var i = 0; i < safeFrameCount; i++)
         {
-            using var left = finalFrames[i];
-            using var right = finalFrames[gap + i];
+            using var left = finalSequence[i];
+            using var right = finalSequence[slidingGap + i];
             Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
-            newFrame.Mutate(ProcessSlide(frameIndex % totalMoves, left.Image, right.Image));
-            yield return new Frame() { Sequence = frameIndex++, Image = newFrame };
-            if ((i + 1) % gap == 0) i += gap;
+            newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, left.Image, right.Image));
+            yield return new Frame() { Sequence = currentFrameIndex++, Image = newFrame };
+            if ((i + 1) % slidingGap == 0) i += slidingGap;
         }
 
-        if (finalFrames.Count % 2 != 0)
+        if (finalSequence.Count % 2 != 0)
         {
-            using var final = finalFrames[^1];
+            using var final = finalSequence[^1];
             Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
-            newFrame.Mutate(ProcessSlide(halfFrameIndex + 1, null, final.Image));
-            yield return new Frame() { Sequence = halfFrameIndex, Image = newFrame };
+            newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, null, final.Image));
+            yield return new Frame() { Sequence = currentFrameIndex, Image = newFrame };
         }
 
         yield break;
