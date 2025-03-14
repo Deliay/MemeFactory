@@ -21,7 +21,7 @@ using var result = await baseSequence
     // compose the punch meme sequence
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
         Composers.Draw(Resizer.Auto, Layout.LeftBottom))
-    .Rotation()
+    .Slide(directionHorizontal: 1, directionVertical: 1)
     // generate final image
     .AutoComposeAsync();
 

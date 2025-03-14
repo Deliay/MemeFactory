@@ -42,7 +42,7 @@ public static class Transformers
     }
 
     public static async IAsyncEnumerable<Frame> Slide(this IAsyncEnumerable<Frame> frames,
-        int direction = 1, int totalMoves = 20,
+        int directionHorizontal = 1, int directionVertical = 0, int totalMoves = 20,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var allFrames = await frames.ToListAsync(cancellationToken);
@@ -55,7 +55,8 @@ public static class Transformers
         }
         var imageSize = allFrames[0].Image.Size;
         
-        var eachX = Convert.ToInt32((1f * imageSize.Width / targetFrames) * direction);
+        var eachX = Convert.ToInt32((1f * imageSize.Width / targetFrames));
+        var eachY = Convert.ToInt32((1f * imageSize.Height / targetFrames));
         var loopTimes = targetFrames / allFrames.Count;
 
         var finalFrames = allFrames.Loop(loopTimes).ToList();
@@ -65,8 +66,13 @@ public static class Transformers
             using var left = finalFrames[i];
             using var right = finalFrames[halfFrameIndex + i];
             Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
-            newFrame.Mutate(ProcessSlide(i, left.Image, right.Image));
+            newFrame.Mutate(ProcessSlide(i + 1, left.Image, right.Image));
             yield return new Frame() { Sequence = i, Image = newFrame };
+        }
+
+        if (finalFrames.Count % 2 != 0)
+        {
+            yield return finalFrames[^1];
         }
 
         yield break;
@@ -75,8 +81,14 @@ public static class Transformers
         {
             return ctx =>
             {
-                ctx.DrawImage(left, new Point(0 - eachX * direction * i, 0), 1f);
-                ctx.DrawImage(right, new Point(imageSize.Width - eachX * direction * i, 0), 1f);
+                var leftX = directionHorizontal != 0 ? 0 - eachX * i : 0;
+                var leftY = directionVertical != 0 ? 0 - eachY * i : 0;
+                
+                var rightX = directionHorizontal != 0 ? imageSize.Width - eachX * i : 0;
+                var rightY = directionVertical != 0 ? imageSize.Height - eachY * i : 0;
+                
+                ctx.DrawImage(left, new Point(leftX * directionHorizontal, leftY * directionVertical), 1f);
+                ctx.DrawImage(right, new Point(rightX * directionHorizontal, rightY * directionVertical), 1f);
             };
         }
     }
