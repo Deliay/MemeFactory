@@ -26,6 +26,7 @@ public static class Transformers
                 .Select(c => (Algorithms.Lcm(allFrames.Count, c) / allFrames.Count, c))
                 .MinBy(p => p.Item1);
             deg = 360f / circleTimes;
+            total -= 1;
         }
 
         var baseSize = allFrames[0].Image.Size;
