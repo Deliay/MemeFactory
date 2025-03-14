@@ -30,15 +30,20 @@ public static class Composers
         };
     }
 
-    private static void SetupGifMetadata(this ImageFrame frame)
+    private static void SetupGifMetadata(this ImageFrame frame, int overrideFrameDelay = -1)
     {
         var gifFrameMetadata = frame.Metadata.GetGifMetadata();
-        gifFrameMetadata.FrameDelay = 0;
+        gifFrameMetadata.FrameDelay = overrideFrameDelay > -1 ? overrideFrameDelay: 0;
         gifFrameMetadata.HasTransparency = false;
         gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
     }
+
+    public static ValueTask<MemeResult> AutoComposeAsync(this IAsyncEnumerable<Frame> frames,
+        CancellationToken cancellationToken = default) =>
+        AutoComposeAsync(frames, -1, cancellationToken);
     
     public static async ValueTask<MemeResult> AutoComposeAsync(this IAsyncEnumerable<Frame> frames,
+        int overrideFrameDelay,
         CancellationToken cancellationToken = default)
     {
         var proceedFrames = await frames.ToListAsync(cancellationToken);
@@ -57,11 +62,11 @@ public static class Composers
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
         
-        templateImage.Frames.RootFrame.SetupGifMetadata();
+        templateImage.Frames.RootFrame.SetupGifMetadata(overrideFrameDelay);
         foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
         {
             templateImage.Frames.InsertFrame(index, proceedImage.Frames.RootFrame);
-            templateImage.Frames[index].SetupGifMetadata();
+            templateImage.Frames[index].SetupGifMetadata(overrideFrameDelay);
         }
 
         return MemeResult.Gif(templateImage);
