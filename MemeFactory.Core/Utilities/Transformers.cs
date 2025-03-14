@@ -92,12 +92,7 @@ public static class Transformers
             .Select(c => (Algorithms.Lcm(targetFrames, c), c))
             .MinBy(p => p.Item1);
 
-        // at least repeat 3 times
-        var unitTargetFrames = targetFrames;
-        while (slidingFrames * 3 > targetFrames)
-        {
-            targetFrames += unitTargetFrames;
-        }
+        while (slidingFrames * 2 > targetFrames) targetFrames += allFrames.Count;
 
         var sequenceExtraLoopTimes = targetFrames / allFrames.Count;
         
@@ -107,10 +102,10 @@ public static class Transformers
         var eachY = (int)Math.Round(1f * imageSize.Height / slidingFrames);
         
         var slidingGap = slidingFrames / 2;
-        var safeFrameCount = slidingFrames * sequenceExtraLoopTimes - slidingGap;
+        var safeFrameCount = targetFrames - slidingGap;
         var finalSequence = allFrames.Loop(sequenceExtraLoopTimes - 1).ToList();
         var currentFrameIndex = 0;
-        for (var i = 0; i <= safeFrameCount; i++)
+        for (var i = 0; i < safeFrameCount; i++)
         {
             using var left = finalSequence[i];
             using var right = finalSequence[slidingGap + i];

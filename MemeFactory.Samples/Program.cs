@@ -22,7 +22,6 @@ using var result = await baseSequence
     .FrameBasedZipSequence(punchSequence.LcmExpand(),
         Composers.Draw(Resizer.Auto, Layout.LeftBottom))
     .Sliding(directionHorizontal: 1, directionVertical: 1)
-    .FrameDelay()
     // generate final image
     .AutoComposeAsync();
 
