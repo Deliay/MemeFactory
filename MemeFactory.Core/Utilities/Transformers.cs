@@ -42,73 +42,38 @@ public static class Transformers
     }
 
     public static async IAsyncEnumerable<Frame> Slide(this IAsyncEnumerable<Frame> frames,
-        int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 20,
+        int directionHorizontal = 1, int directionVertical = 0, int minMoves = 4,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var allFrames = await frames.ToListAsync(cancellationToken);
 
+        // padding to more than `minMoves` frames when not enough
         var targetFrames = allFrames.Count;
-        
-        // calculate a LCM number between to make the frames smoooooth
-        (targetFrames, slidingFrames) = Enumerable.Range(slidingFrames - 5, 10)
-            .Select(c => (Algorithms.Lcm(targetFrames, c), c))
-            .MinBy(p => p.Item1);
-        var safeRepeatCount = targetFrames / slidingFrames;
-        
-        var imageSize = allFrames[0].Image.Size;
-        // get the distance each frame moved
-        var eachX = Convert.ToInt32((1f * imageSize.Width * safeRepeatCount / targetFrames));
-        var eachY = Convert.ToInt32((1f * imageSize.Height * safeRepeatCount / targetFrames));
-        
-        var sequenceExtraLoopTimes = targetFrames / allFrames.Count - 1;
-        var safeFrameCount = slidingFrames * safeRepeatCount - 10;
-        var finalSequence = allFrames.Loop(sequenceExtraLoopTimes).ToList();
-        var currentFrameIndex = 0;
-        var slidingGap = slidingFrames / 2;
-        for (var i = 0; i < safeFrameCount; i++)
-        {
-            using var left = finalSequence[i];
-            using var right = finalSequence[slidingGap + i];
-            Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
-            newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, left.Image, right.Image));
-            yield return new Frame() { Sequence = currentFrameIndex++, Image = newFrame };
-            if ((i + 1) % slidingGap == 0) i += slidingGap;
-        }
+        var loopTimes = (minMoves + targetFrames - 1) / targetFrames;
 
-        if (finalSequence.Count % 2 != 0)
+        var finalFrames = allFrames.Loop(loopTimes - 1).ToList();
+        for (var i = 0; i < finalFrames.Count; i++)
         {
-            using var final = finalSequence[^1];
-            Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
-            newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, null, final.Image));
-            yield return new Frame() { Sequence = currentFrameIndex, Image = newFrame };
+            using var frame = finalFrames[i];
+            Image newFrame = new Image<Rgba32>(frame.Image.Size.Width, frame.Image.Size.Height);
+            newFrame.Mutate(ProcessSlide(i, frame.Image));
+            yield return new Frame { Sequence = i, Image = newFrame };
         }
 
         yield break;
 
-        Action<IImageProcessingContext> ProcessSlide(int i, Image? left, Image? right)
+        Action<IImageProcessingContext> ProcessSlide(int i, Image image)
         {
             return ctx =>
             {
-                if (left is not null)
-                {
-                    var leftX = directionHorizontal != 0 ? 0 - eachX * i : 0;
-                    var leftY = directionVertical != 0 ? 0 - eachY * i : 0;
-                    var leftPos = new Point(
-                        (leftX) * directionHorizontal,
-                        (leftY) * directionVertical);
-                    
-                    ctx.DrawImage(left, leftPos, 1f);
-                }
+                var x = (int)Math.Round(1f * i / finalFrames.Count * image.Size.Width, MidpointRounding.AwayFromZero);
+                var y = (int)Math.Round(1f * i / finalFrames.Count * image.Size.Height, MidpointRounding.AwayFromZero);
 
-                if (right is not null)
-                {
-                    var rightX = directionHorizontal != 0 ? imageSize.Width - eachX * i : 0;
-                    var rightY = directionVertical != 0 ? imageSize.Height - eachY * i : 0;
-                    var rightPos = new Point(
-                        (rightX) * directionHorizontal,
-                        (rightY) * directionVertical);
-                    ctx.DrawImage(right, rightPos, 1f);
-                }
+                var leftPos = new Point((x - image.Size.Width) * directionHorizontal, (y - image.Size.Height) * directionVertical);
+                var rightPos = new Point(x * directionHorizontal, y * directionVertical);
+
+                ctx.DrawImage(image, leftPos, 1f);
+                ctx.DrawImage(image, rightPos, 1f);
             };
         }
     }
