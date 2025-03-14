@@ -4,7 +4,7 @@ A meme processing utility based on ImageSharp.
 
 ## Install
 ```xml
-<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.21" />
+<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.23" />
 ```
 ## Design
 ```mermaid
