@@ -11,21 +11,22 @@ public static class Frames
 {
     public static Frame Copy(this ImageFrameCollection frameCollection, int sequence)
     {
+        var rawFrame = frameCollection[sequence];
         using var frame = frameCollection.CloneFrame(sequence);
         var newImage = new Image<Rgba32>(frame.Width, frame.Height);
         newImage.Mutate(x => x.DrawImage(frame, 1.0f));
-        
+        rawFrame.CopyGifPropertiesTo(newImage.Frames.RootFrame);
         return new Frame(sequence, newImage);
     }
     
-    public static void CopyGifPropertiesTo(this ImageFrame src, ImageFrame dest)
+    private static void CopyGifPropertiesTo(this ImageFrame src, ImageFrame dest)
     {
         src.Metadata.GetGifMetadata().CopyGifPropertiesTo(dest.Metadata.GetGifMetadata());
     }
     
-    public static void CopyGifPropertiesTo(this GifFrameMetadata src, GifFrameMetadata dest)
+    private static void CopyGifPropertiesTo(this GifFrameMetadata src, GifFrameMetadata dest)
     {
-        dest.DisposalMethod = GifDisposalMethod.RestoreToBackground;
+        dest.DisposalMethod = dest.DisposalMethod;
         dest.FrameDelay = src.FrameDelay;
         dest.HasTransparency = src.HasTransparency;
         dest.LocalColorTable = src.LocalColorTable;
@@ -58,7 +59,7 @@ public static class Frames
         });
     }
 
-    public static async IAsyncEnumerable<Frame> Slow(this IAsyncEnumerable<Frame> src, int times)
+    public static async IAsyncEnumerable<Frame> DuplicateFrame(this IAsyncEnumerable<Frame> src, int times)
     {
         var index = 0;
         await foreach (var frame in src)

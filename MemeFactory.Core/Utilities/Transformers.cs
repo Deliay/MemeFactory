@@ -41,7 +41,7 @@ public static class Transformers
         }
     }
 
-    public static async IAsyncEnumerable<Frame> Slide(this IAsyncEnumerable<Frame> frames,
+    public static async IAsyncEnumerable<Frame> Sliding(this IAsyncEnumerable<Frame> frames,
         int directionHorizontal = 1, int directionVertical = 0, int minMoves = 4,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -78,7 +78,7 @@ public static class Transformers
         }
     }
     
-    public static async IAsyncEnumerable<Frame> TimelineSlide(this IAsyncEnumerable<Frame> frames,
+    public static async IAsyncEnumerable<Frame> TimelineSliding(this IAsyncEnumerable<Frame> frames,
         int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 16,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {

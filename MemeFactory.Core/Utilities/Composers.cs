@@ -30,10 +30,15 @@ public static class Composers
         };
     }
 
-    private static void SetupGifMetadata(this ImageFrame frame, int overrideFrameDelay = -1)
+    private static void SetupGifMetadata(this ImageFrame frame, Frame template, int overrideFrameDelay = -1)
     {
         var gifFrameMetadata = frame.Metadata.GetGifMetadata();
-        gifFrameMetadata.FrameDelay = overrideFrameDelay > -1 ? overrideFrameDelay: 30;
+        var templateMetadata = template.Image.Frames.RootFrame.Metadata.GetGifMetadata();
+        
+        gifFrameMetadata.FrameDelay = overrideFrameDelay > -1
+            ? overrideFrameDelay
+            : Math.Max(20, templateMetadata.FrameDelay);
+        
         gifFrameMetadata.HasTransparency = false;
         gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
     }
@@ -62,13 +67,24 @@ public static class Composers
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
         
-        templateImage.Frames.RootFrame.SetupGifMetadata(overrideFrameDelay);
-        foreach (var (index, proceedImage) in proceedFrames[1..]) using (proceedImage)
+        templateImage.Frames.RootFrame.SetupGifMetadata(rootFrame, overrideFrameDelay);
+        foreach (var frame in proceedFrames[1..]) using (frame)
         {
-            templateImage.Frames.InsertFrame(index, proceedImage.Frames.RootFrame);
-            templateImage.Frames[index].SetupGifMetadata(overrideFrameDelay);
+            templateImage.Frames.InsertFrame(frame.Sequence, frame.Image.Frames.RootFrame);
+            templateImage.Frames[frame.Sequence].SetupGifMetadata(frame, overrideFrameDelay);
         }
 
         return MemeResult.Gif(templateImage);
+    }
+    
+    public static IAsyncEnumerable<Frame> FrameDelay(this IAsyncEnumerable<Frame> frames, TimeSpan duration)
+    {
+        return frames.Select(f =>
+        {
+            var gifFrameMetadata = f.Image.Frames.RootFrame.Metadata.GetGifMetadata();
+            gifFrameMetadata.FrameDelay = (int)Math.Round(duration.TotalMilliseconds / 10, MidpointRounding.AwayFromZero);
+            
+            return f;
+        });
     }
 }

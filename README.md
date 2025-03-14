@@ -36,7 +36,7 @@ using var baseSequence = await baseImage.ExtractFrames()
 using var merry = await Image.LoadAsync("resources/merry.png");
 using var punchSequence = await Frames
     .LoadFromFolderAsync("resources/punch")
-    .Slow(times: 1)
+    .DuplicateFrame(times: 1)
     .ToSequenceAsync();
 
 // process
