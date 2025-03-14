@@ -79,7 +79,7 @@ public static class Transformers
     }
     
     public static async IAsyncEnumerable<Frame> TimelineSliding(this IAsyncEnumerable<Frame> frames,
-        int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 16,
+        int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 8,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var allFrames = await frames.ToListAsync(cancellationToken);
@@ -91,10 +91,9 @@ public static class Transformers
         (targetFrames, slidingFrames) = Enumerable.Range(slidingFrames - (slidingFrames / 4), slidingFrames / 2)
             .Select(c => (Algorithms.Lcm(targetFrames, c), c))
             .MinBy(p => p.Item1);
-
-        while (slidingFrames * 2 > targetFrames) targetFrames += allFrames.Count;
-
-        var sequenceExtraLoopTimes = targetFrames / allFrames.Count;
+        
+        while (slidingFrames * 2 >= targetFrames)targetFrames += allFrames.Count;
+        if ((targetFrames / slidingFrames) % 2 != 0) targetFrames += allFrames.Count;
         
         var imageSize = allFrames[0].Image.Size;
         // get the distance each frame moved
@@ -103,7 +102,10 @@ public static class Transformers
         
         var slidingGap = slidingFrames / 2;
         var safeFrameCount = targetFrames - slidingGap;
+        
+        var sequenceExtraLoopTimes = targetFrames / allFrames.Count;
         var finalSequence = allFrames.Loop(sequenceExtraLoopTimes - 1).ToList();
+        
         var currentFrameIndex = 0;
         for (var i = 0; i < safeFrameCount; i++)
         {
