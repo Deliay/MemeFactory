@@ -3,6 +3,7 @@ using MemeFactory.Core.Processing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors;
 
 namespace MemeFactory.Core.Utilities;
 
@@ -36,6 +37,46 @@ public static class Transformers
             var y = (baseSize.Height - frame.Image.Height) / 2;
             newFrame.Mutate((ctx) => ctx.DrawImage(frame.Image, new Point(x, y), 1f));
             yield return frame with { Image = newFrame };
+        }
+    }
+
+    public static async IAsyncEnumerable<Frame> Slide(this IAsyncEnumerable<Frame> frames,
+        int direction = 1, int totalMoves = 20,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var allFrames = await frames.ToListAsync(cancellationToken);
+
+        // padding to more than 20 frames when not enough
+        var targetFrames = allFrames.Count;
+        if (targetFrames < totalMoves)
+        {
+            targetFrames = Convert.ToInt32(Math.Ceiling(1f * totalMoves / targetFrames)) * targetFrames;
+        }
+        var imageSize = allFrames[0].Image.Size;
+        
+        var eachX = Convert.ToInt32((1f * imageSize.Width / targetFrames) * direction);
+        var loopTimes = targetFrames / allFrames.Count;
+
+        var finalFrames = allFrames.Loop(loopTimes).ToList();
+        var halfFrameIndex = finalFrames.Count / 2;
+        for (var i = 0; i < halfFrameIndex; i++)
+        {
+            using var left = finalFrames[i];
+            using var right = finalFrames[halfFrameIndex + i];
+            Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
+            newFrame.Mutate(ProcessSlide(i, left.Image, right.Image));
+            yield return new Frame() { Sequence = i, Image = newFrame };
+        }
+
+        yield break;
+
+        Action<IImageProcessingContext> ProcessSlide(int i, Image left, Image right)
+        {
+            return ctx =>
+            {
+                ctx.DrawImage(left, new Point(0 - eachX * direction * i, 0), 1f);
+                ctx.DrawImage(right, new Point(imageSize.Width - eachX * direction * i, 0), 1f);
+            };
         }
     }
 }
