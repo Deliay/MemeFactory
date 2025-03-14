@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <NoWarn>$(NoWarn);NU1507</NoWarn>
-    <Version>1.0.0-alpha.18</Version>
+    <Version>1.0.0-alpha.19</Version>
     <Authors>ZeroAsh</Authors>
     <PackageTags>meme;</PackageTags>
     <RepositoryUrl>https://github.com/Deliay/MemeFactory</RepositoryUrl>
