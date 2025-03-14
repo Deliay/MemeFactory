@@ -33,7 +33,7 @@ public static class Composers
     private static void SetupGifMetadata(this ImageFrame frame, int overrideFrameDelay = -1)
     {
         var gifFrameMetadata = frame.Metadata.GetGifMetadata();
-        gifFrameMetadata.FrameDelay = overrideFrameDelay > -1 ? overrideFrameDelay: 0;
+        gifFrameMetadata.FrameDelay = overrideFrameDelay > -1 ? overrideFrameDelay: 30;
         gifFrameMetadata.HasTransparency = false;
         gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
     }

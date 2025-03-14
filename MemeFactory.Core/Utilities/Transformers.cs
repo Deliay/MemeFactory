@@ -77,4 +77,71 @@ public static class Transformers
             };
         }
     }
+    
+    public static async IAsyncEnumerable<Frame> TimelineSlide(this IAsyncEnumerable<Frame> frames,
+        int directionHorizontal = 1, int directionVertical = 0, int slidingFrames = 16,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var allFrames = await frames.ToListAsync(cancellationToken);
+
+        var targetFrames = allFrames.Count;
+
+        // calculate LCM between slidingFrames and targetFrames
+        // to make the frames smoooooth
+        (targetFrames, slidingFrames) = Enumerable.Range(slidingFrames - (slidingFrames / 4), slidingFrames / 2)
+            .Select(c => (Algorithms.Lcm(targetFrames, c), c))
+            .MinBy(p => p.Item1);
+
+        // at least repeat 3 times
+        var unitTargetFrames = targetFrames;
+        while (slidingFrames * 3 > targetFrames)
+        {
+            targetFrames += unitTargetFrames;
+        }
+
+        var sequenceExtraLoopTimes = targetFrames / allFrames.Count;
+        
+        var imageSize = allFrames[0].Image.Size;
+        // get the distance each frame moved
+        var eachX = (int)Math.Round(1f * imageSize.Width / slidingFrames);
+        var eachY = (int)Math.Round(1f * imageSize.Height / slidingFrames);
+        
+        var slidingGap = slidingFrames / 2;
+        var safeFrameCount = slidingFrames * sequenceExtraLoopTimes - slidingGap;
+        var finalSequence = allFrames.Loop(sequenceExtraLoopTimes - 1).ToList();
+        var currentFrameIndex = 0;
+        for (var i = 0; i <= safeFrameCount; i++)
+        {
+            using var left = finalSequence[i];
+            using var right = finalSequence[slidingGap + i];
+            Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
+            newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, left.Image, right.Image));
+            yield return new Frame { Sequence = currentFrameIndex++, Image = newFrame };
+            if ((i + 1) % slidingGap == 0) i += slidingGap;
+        }
+
+        yield break;
+
+        Action<IImageProcessingContext> ProcessSlide(int i, Image left, Image right)
+        {
+            return ctx =>
+            {
+                var baseX = eachX * i;
+                var baseY = eachY * i;
+                
+                var leftX = directionHorizontal * (0 - baseX);
+                var rightX = directionHorizontal * (imageSize.Width - baseX);
+                
+                var leftY = directionVertical * (0 - baseY);
+                var rightY = directionVertical * (imageSize.Height - baseY);
+                
+                var leftPos = new Point(leftX, leftY);
+                var rightPos = new Point(rightX, rightY);
+                
+                ctx.DrawImage(left, leftPos, 1f);
+                ctx.DrawImage(right, rightPos, 1f);
+
+            };
+        }
+    }
 }
