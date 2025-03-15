@@ -4,6 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace MemeFactory.Core.Utilities;
 
@@ -140,5 +141,29 @@ public static class Transformers
 
             };
         }
+    }
+    
+    public static IAsyncEnumerable<Frame> Flip(this IAsyncEnumerable<Frame> frames, FlipMode flipMode)
+    {
+        var processor = new FlipProcessor(flipMode);
+        return frames.Select(f =>
+        {
+            f.Image.Mutate(ctx =>
+            {
+                ctx.ApplyProcessor(processor);
+            });
+            return f;
+        });
+    }
+    public static IAsyncEnumerable<Frame> Resize(this IAsyncEnumerable<Frame> frames, ResizeOptions options)
+    {
+        return frames.Select(f =>
+        {
+            f.Image.Mutate(ctx =>
+            {
+                ctx.ApplyProcessor(new ResizeProcessor(options, f.Image.Size));
+            });
+            return f;
+        });
     }
 }
