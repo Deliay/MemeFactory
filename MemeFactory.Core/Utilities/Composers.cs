@@ -37,7 +37,7 @@ public static class Composers
         
         gifFrameMetadata.FrameDelay = overrideFrameDelay > -1
             ? overrideFrameDelay
-            : Math.Max(20, templateMetadata.FrameDelay);
+            : Math.Max(2, templateMetadata.FrameDelay);
         
         gifFrameMetadata.HasTransparency = false;
         gifFrameMetadata.DisposalMethod = GifDisposalMethod.RestoreToBackground;
