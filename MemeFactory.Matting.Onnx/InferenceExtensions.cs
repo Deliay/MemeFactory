@@ -13,6 +13,11 @@ public static class InferenceExtensions
         return new InferenceSession(modelConfiguration.ModelPath);
     }
     
+    public static InferenceSession GetInferenceSession(this ModelConfiguration modelConfiguration, SessionOptions options)
+    {
+        return new InferenceSession(modelConfiguration.ModelPath, options);
+    }
+    
     public static Tensor<float> Inference(this InferenceSession session, Tensor<float> input)
     {
         var inputs = new List<NamedOnnxValue>()
@@ -27,6 +32,15 @@ public static class InferenceExtensions
     public static async IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames, ModelConfiguration model)
     {
         using var session = model.GetInferenceSession();
+        await foreach (var frame in frames.ApplyModel(session, model))
+        {
+            yield return frame;
+        }
+    }
+    
+
+    public static async IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames, InferenceSession session, ModelConfiguration model)
+    {
         await foreach (var frame in frames)
         {
             using var currentFrame = frame;
@@ -40,5 +54,4 @@ public static class InferenceExtensions
             yield return frame with { Image = src.ApplyMaskToImage(mask) };
         }
     }
-    
 }

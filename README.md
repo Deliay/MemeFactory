@@ -35,7 +35,7 @@ See [MemeFactory.Samples](MemeFactory.Samples)
 IAsyncEnumerable<Frame> frames;
 
 var model = new RmbgConfiguration("your_model_path");
-var result = frames.ApplyModel(model).AutoComposeAsync();
+using var result = frames.ApplyModel(model).AutoComposeAsync();
 
 await result.Image.SaveAsync("result." + result.Extension, result.Encoder);
 ```
