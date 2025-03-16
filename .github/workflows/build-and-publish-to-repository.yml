@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "MemeFactory.Core/**"
-      - "MemeFactory.sln"
-      - "LICENSE"
-      - "README.md"
-      - "Directory.Packages.props"
-  workflow_dispatch:
 
 jobs:
   build:
@@ -26,14 +19,11 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: ./MemeFactory.Core
         
       - name: Build
         run: dotnet pack
-        working-directory: ./MemeFactory.Core
         
       - name: publish-to-nuget
         run: dotnet nuget push **/*.nupkg --api-key=${{secrets.NUGET_KEY}} --skip-duplicate --source=https://api.nuget.org/v3/index.json
-        working-directory: ./MemeFactory.Core
         
         
