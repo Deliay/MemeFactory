@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace MemeFactory.Core.Utilities;
 
@@ -22,7 +23,12 @@ public static class Composers
         {
             f.Image.Mutate(frameCtx =>
             {
-                using var newImage = image.Clone(ctx => ctx.Resize(sizer(f)));
+                using var newImage = image.Clone(ctx => ctx.Resize(new ResizeOptions()
+                {
+                    Size = sizer(f),
+                    Mode = ResizeMode.Stretch,
+                    Sampler = LanczosResampler.Lanczos3,
+                }));
                 var poser = imagePos(newImage);
                 frameCtx.DrawImage(newImage, poser(f), 1.0f);
             });

@@ -33,7 +33,7 @@ public static class Transformers
         var baseSize = allFrames[0].Image.Size;
         foreach (var frame in allFrames.Loop(total).ToList()) using (frame)
         {
-            frame.Image.Mutate((ctx) => ctx.Rotate(deg * frame.Sequence - 1));
+            frame.Image.Mutate((ctx) => ctx.Rotate(deg * frame.Sequence - 1, LanczosResampler.Lanczos3));
             var newFrame = new Image<Rgba32>(baseSize.Width, baseSize.Height);
             var x = (baseSize.Width - frame.Image.Width) / 2;
             var y = (baseSize.Height - frame.Image.Height) / 2;
