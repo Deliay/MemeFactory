@@ -4,7 +4,7 @@ A meme processing utility based on ImageSharp.
 
 ## Install
 ```xml
-<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.26" />
+<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.28" />
 ```
 ## Design
 ```mermaid
@@ -25,35 +25,22 @@ sequenceDiagram
 ```
 
 ## Usage
+See [MemeFactory.Samples](MemeFactory.Samples)
 
-```csharp
-// load resources
-using var baseImage = await Image.LoadAsync("resources/base.gif");
-using var baseSequence = await baseImage.ExtractFrames()
-    // the Sequence class can manage the disposal of all frames
-    .ToSequenceAsync();
-
-using var merry = await Image.LoadAsync("resources/merry.png");
-using var punchSequence = await Frames
-    .LoadFromFolderAsync("resources/punch")
-    .DuplicateFrame(times: 1)
-    .ToSequenceAsync();
-
-// process
-using var result = await baseSequence  // layer 0: base sequence
-    // compose each frame with an image
-    .EachFrame(Composers.Draw(merry, Resizer.Auto, Layout.LeftBottom))
-    // compose two sequence frame by frame
-    .FrameBasedZipSequence(punchSequence.LcmExpand(),
-        Composers.Draw(Resizer.Auto, Layout.RightCenter))
-     // rotate all frame
-    .Rotation()
-    // generate final image
-    .AutoComposeAsync();
-
-// output
-await result.Image.SaveAsync(@"result." + result.Extension, result.Encoder);
+## Matting image using AI
+```xml
+<PackageReference Include="MemeFactory.Matting.Onnx" Version="1.0.0-alpha.28" />
 ```
+```csharp
+IAsyncEnumerable<Frame> frames;
+
+var model = new RmbgConfiguration("your_model_path");
+var result = frames.ApplyModel(model).AutoComposeAsync();
+
+await result.Image.SaveAsync("result." + result.Extension, result.Encoder);
+```
+See also: [RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0) / [ModNet](https://github.com/ZHKKKe/MODNet) / [PaddleSeg/Matting](https://github.com/PaddlePaddle/PaddleSeg/tree/develop/Matting) 
+
 ## Built-in Processors 
 
 | Method                | Description                                                                                                                  |

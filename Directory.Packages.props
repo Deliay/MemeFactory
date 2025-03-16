@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <NoWarn>$(NoWarn);NU1507</NoWarn>
-    <Version>1.0.0-alpha.27</Version>
+    <Version>1.0.0-alpha.28</Version>
     <Authors>ZeroAsh</Authors>
     <PackageTags>meme;</PackageTags>
     <RepositoryUrl>https://github.com/Deliay/MemeFactory</RepositoryUrl>
@@ -16,6 +16,7 @@
     <Description>A meme processing utility that provides many tools to generate meme.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.ML.OnnxRuntime" Version="1.21.0" />
     <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.7" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="SixLabors.ImageSharp.Drawing" Version="2.1.5" />
