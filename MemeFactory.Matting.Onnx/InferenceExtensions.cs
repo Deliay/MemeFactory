@@ -2,6 +2,7 @@
 using MemeFactory.Matting.Onnx.Models;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace MemeFactory.Matting.Onnx;
@@ -38,8 +39,15 @@ public static class InferenceExtensions
         }
     }
     
-
-    public static async IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames, InferenceSession session, ModelConfiguration model)
+    public static IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames,
+        InferenceSession session, ModelConfiguration model)
+    {
+        return ApplyModel(frames, session, model, i => i);
+    }
+    
+    public static async IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames,
+        InferenceSession session, ModelConfiguration model,
+        Func<Image<Rgba32>, Image<Rgba32>> maskProcessor)
     {
         await foreach (var frame in frames)
         {
@@ -50,8 +58,8 @@ public static class InferenceExtensions
             var output = session.Inference(input);
 
             using var mask = output.ConvertTensorToImageMask(model, src);
-
-            yield return frame with { Image = src.ApplyMaskToImage(mask) };
+            using var finalMask = maskProcessor(mask);
+            yield return frame with { Image = src.ApplyMaskToImage(finalMask) };
         }
     }
 }

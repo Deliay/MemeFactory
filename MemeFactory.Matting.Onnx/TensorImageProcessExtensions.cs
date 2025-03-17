@@ -46,7 +46,7 @@ public static class TensorImageProcessExtensions
         return mask;
     }
 
-    internal static Image<Rgba32> ApplyMaskToImage(this Image<Rgba32> src, Image<Rgba32> mask, int confidence = 20)
+    public static Image<Rgba32> ApplyMaskToImage(this Image<Rgba32> src, Image<Rgba32> mask, int confidence = 20)
     {
         var finalImage = new Image<Rgba32>(src.Width, src.Height);
         var transparentPixel = new Rgba32(0, 0, 0, 0);
