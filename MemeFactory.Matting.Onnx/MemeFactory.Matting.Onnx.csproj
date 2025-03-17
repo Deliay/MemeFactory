@@ -2,7 +2,7 @@
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/"/>
     <None Include="../LICENSE" Pack="true" PackagePath="/"/>
-    <ProjectReference Include="..\MemeFactory.Core\MemeFactory.Core.csproj" />
+    <ProjectReference Include="..\MemeFactory.Core.Abstraction\MemeFactory.Core.Abstraction.csproj" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" />
   </ItemGroup>
 </Project>

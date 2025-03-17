@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>MemeFactory.Core</RootNamespace>
+    <Version>1.0.0-alpha.33</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/"/>
+    <None Include="../LICENSE" Pack="true" PackagePath="/"/>
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+</Project>

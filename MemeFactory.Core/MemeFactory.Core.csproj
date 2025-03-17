@@ -2,7 +2,6 @@
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/"/>
     <None Include="../LICENSE" Pack="true" PackagePath="/"/>
-    <PackageReference Include="SixLabors.ImageSharp" />
-    <PackageReference Include="System.Linq.Async" />
+    <ProjectReference Include="..\MemeFactory.Core.Abstraction\MemeFactory.Core.Abstraction.csproj" />
   </ItemGroup>
 </Project>
