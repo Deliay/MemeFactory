@@ -3,6 +3,7 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace MemeFactory.Matting.Onnx;
 
@@ -10,7 +11,8 @@ public static class TensorImageProcessExtensions
 {
     public static Tensor<float> NormalizeImageToTensor(this Image<Rgba32> image, ModelConfiguration model)
     {
-        using var copiedImage = image.Clone(c => c.Resize(model.InputWidth, model.InputHeight));
+        using var copiedImage = image.Clone(c => c.Resize(model.InputWidth, model.InputHeight,
+            LanczosResampler.Lanczos3));
 
         var tensor = new DenseTensor<float>([1, 3, model.InputHeight, model.InputWidth]);
         
@@ -42,7 +44,7 @@ public static class TensorImageProcessExtensions
                 mask[x, y] = new Rgba32(intensity, intensity, intensity, 255);
             }
         });
-        mask.Mutate(x => x.Resize(src.Width, src.Height));
+        mask.Mutate(x => x.Resize(src.Width, src.Height, LanczosResampler.Lanczos3));
         return mask;
     }
 
