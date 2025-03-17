@@ -47,7 +47,7 @@ public static class InferenceExtensions
     
     public static async IAsyncEnumerable<Frame> ApplyModel(this IAsyncEnumerable<Frame> frames,
         InferenceSession session, ModelConfiguration model,
-        Func<Image<Rgba32>, Image<Rgba32>> maskProcessor)
+        Func<Image<Rgba32>, Image<Rgba32>> maskProcessor, int confidence = 20)
     {
         await foreach (var frame in frames)
         {
@@ -59,7 +59,7 @@ public static class InferenceExtensions
 
             using var mask = output.ConvertTensorToImageMask(model, src);
             using var finalMask = maskProcessor(mask);
-            yield return frame with { Image = src.ApplyMaskToImage(finalMask) };
+            yield return frame with { Image = src.ApplyMaskToImage(finalMask, confidence) };
         }
     }
 }
