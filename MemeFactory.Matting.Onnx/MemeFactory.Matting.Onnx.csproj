@@ -3,6 +3,6 @@
     <None Include="../README.md" Pack="true" PackagePath="/"/>
     <None Include="../LICENSE" Pack="true" PackagePath="/"/>
     <ProjectReference Include="..\MemeFactory.Core\MemeFactory.Core.csproj" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" />
   </ItemGroup>
 </Project>

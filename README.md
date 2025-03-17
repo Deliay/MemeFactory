@@ -41,6 +41,8 @@ await result.Image.SaveAsync("result." + result.Extension, result.Encoder);
 ```
 See also: [RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0) / [ModNet](https://github.com/ZHKKKe/MODNet) / [PaddleSeg/Matting](https://github.com/PaddlePaddle/PaddleSeg/tree/develop/Matting) 
 
+> Note: Reference at least one ONNX runtime native package in your project.
+
 ## Built-in Processors 
 
 | Method                | Description                                                                                                                  |
