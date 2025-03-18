@@ -4,7 +4,7 @@ A meme processing utility based on ImageSharp.
 
 ## Install
 ```xml
-<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.37" />
+<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.38" />
 ```
 
 ## Design
@@ -30,7 +30,7 @@ See [MemeFactory.Samples](MemeFactory.Samples)
 
 ## Matting image using AI
 ```xml
-<PackageReference Include="MemeFactory.Matting.Onnx" Version="1.0.0-alpha.37" />
+<PackageReference Include="MemeFactory.Matting.Onnx" Version="1.0.0-alpha.38" />
 ```
 ```csharp
 IAsyncEnumerable<Frame> frames;
@@ -47,7 +47,7 @@ See also: [RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0) / [ModNet](https://
 
 ## Processing image with ffmpeg
 ```xml
-<PackageReference Include="MemeFactory.Ffmpeg" Version="1.0.0-alpha.37" />
+<PackageReference Include="MemeFactory.Ffmpeg" Version="1.0.0-alpha.38" />
 ```
 ```csharp
 IAsyncEnumerable<Frame> frames;
@@ -59,7 +59,7 @@ frames.SpeedUp(1.0f);
 
 ## Processing image with OpenCv
 ```xml
-<PackageReference Include="MemeFactory.OpenCv" Version="1.0.0-alpha.37" />
+<PackageReference Include="MemeFactory.OpenCv" Version="1.0.0-alpha.38" />
 ```
 ```csharp
 IAsyncEnumerable<Frame> frames;
