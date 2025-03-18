@@ -3,7 +3,6 @@ using MemeFactory.Core.Processing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace MemeFactory.Core.Utilities;
@@ -38,7 +37,7 @@ public static class Transformers
             var x = (baseSize.Width - frame.Image.Width) / 2;
             var y = (baseSize.Height - frame.Image.Height) / 2;
             newFrame.Mutate((ctx) => ctx.DrawImage(frame.Image, new Point(x, y), 1f));
-            yield return frame with { Image = newFrame };
+            yield return frame with { Image = newFrame.WithGifMetadata(frame) };
         }
     }
 
@@ -58,7 +57,7 @@ public static class Transformers
             using var frame = finalFrames[i];
             Image newFrame = new Image<Rgba32>(frame.Image.Size.Width, frame.Image.Size.Height);
             newFrame.Mutate(ProcessSlide(i, frame.Image));
-            yield return new Frame { Sequence = i, Image = newFrame };
+            yield return new Frame { Sequence = i, Image = newFrame.WithGifMetadata(frame) };
         }
 
         yield break;
@@ -114,7 +113,7 @@ public static class Transformers
             using var right = finalSequence[slidingGap + i];
             Image newFrame = new Image<Rgba32>(imageSize.Width, imageSize.Height);
             newFrame.Mutate(ProcessSlide(currentFrameIndex % slidingFrames, left.Image, right.Image));
-            yield return new Frame { Sequence = currentFrameIndex++, Image = newFrame };
+            yield return new Frame { Sequence = currentFrameIndex++, Image = newFrame.WithGifMetadata(right) };
             if ((i + 1) % slidingGap == 0) i += slidingGap;
         }
 
@@ -163,6 +162,17 @@ public static class Transformers
             {
                 ctx.ApplyProcessor(new ResizeProcessor(options, f.Image.Size));
             });
+            return f;
+        });
+    }
+
+    public static IAsyncEnumerable<Frame> ProjectiveTransform(this IAsyncEnumerable<Frame> frames,
+        ProjectiveTransformBuilder transformBuilder)
+
+    {
+        return frames.Select(f =>
+        {
+            f.Image.Mutate(ctx => ctx.Transform(transformBuilder));
             return f;
         });
     }

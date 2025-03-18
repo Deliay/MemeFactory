@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemeFactory.Matting.Onnx", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemeFactory.Core.Abstraction", "MemeFactory.Core.Abstraction\MemeFactory.Core.Abstraction.csproj", "{A83C291D-97C0-468C-A4BD-9A4FA5145985}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemeFactory.Ffmpeg", "MemeFactory.Ffmpeg\MemeFactory.Ffmpeg.csproj", "{4CE26889-0E69-45EB-8C9B-A5091B6843D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemeFactory.OpenCv", "MemeFactory.OpenCv\MemeFactory.OpenCv.csproj", "{7C91D7B7-87DD-47F4-B487-34C978E9FAA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{A83C291D-97C0-468C-A4BD-9A4FA5145985}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A83C291D-97C0-468C-A4BD-9A4FA5145985}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A83C291D-97C0-468C-A4BD-9A4FA5145985}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CE26889-0E69-45EB-8C9B-A5091B6843D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CE26889-0E69-45EB-8C9B-A5091B6843D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CE26889-0E69-45EB-8C9B-A5091B6843D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CE26889-0E69-45EB-8C9B-A5091B6843D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C91D7B7-87DD-47F4-B487-34C978E9FAA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C91D7B7-87DD-47F4-B487-34C978E9FAA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C91D7B7-87DD-47F4-B487-34C978E9FAA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C91D7B7-87DD-47F4-B487-34C978E9FAA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

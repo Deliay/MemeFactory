@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/"/>
+    <None Include="../LICENSE" Pack="true" PackagePath="/"/>
+    <PackageReference Include="FFMpegCore" />
+    <ProjectReference Include="..\MemeFactory.Core.Abstraction\MemeFactory.Core.Abstraction.csproj" />
+    <ProjectReference Include="..\MemeFactory.Core\MemeFactory.Core.csproj" />
+  </ItemGroup>
+
+</Project>

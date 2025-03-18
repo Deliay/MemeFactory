@@ -36,7 +36,13 @@ public static class Composers
         };
     }
 
-    private static void SetupGifMetadata(this ImageFrame frame, Frame template, int overrideFrameDelay = -1)
+    public static Image WithGifMetadata(this Image image, Frame template, int overrideFrameDelay = -1)
+    {
+        image.Frames.RootFrame.WithGifMetadata(template, overrideFrameDelay);
+        return image;
+    }
+
+    public static void WithGifMetadata(this ImageFrame frame, Frame template, int overrideFrameDelay = -1)
     {
         var gifFrameMetadata = frame.Metadata.GetGifMetadata();
         var templateMetadata = template.Image.Frames.RootFrame.Metadata.GetGifMetadata();
@@ -57,7 +63,7 @@ public static class Composers
         int overrideFrameDelay,
         CancellationToken cancellationToken = default)
     {
-        var proceedFrames = await frames.ToListAsync(cancellationToken);
+        var proceedFrames = await frames.OrderBy(f => f.Sequence).ToListAsync(cancellationToken);
 
         switch (proceedFrames.Count)
         {
@@ -73,11 +79,11 @@ public static class Composers
         var rootMetadata = templateImage.Metadata.GetGifMetadata();
         rootMetadata.RepeatCount = 0;
         
-        templateImage.Frames.RootFrame.SetupGifMetadata(rootFrame, overrideFrameDelay);
+        templateImage.WithGifMetadata(rootFrame, overrideFrameDelay);
         foreach (var frame in proceedFrames[1..]) using (frame)
         {
             templateImage.Frames.InsertFrame(frame.Sequence, frame.Image.Frames.RootFrame);
-            templateImage.Frames[frame.Sequence].SetupGifMetadata(frame, overrideFrameDelay);
+            templateImage.Frames[frame.Sequence].WithGifMetadata(frame, overrideFrameDelay);
         }
 
         return MemeResult.Gif(templateImage);

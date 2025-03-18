@@ -4,8 +4,9 @@ A meme processing utility based on ImageSharp.
 
 ## Install
 ```xml
-<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.28" />
+<PackageReference Include="MemeFactory.Core" Version="1.0.0-alpha.37" />
 ```
+
 ## Design
 ```mermaid
 sequenceDiagram
@@ -29,7 +30,7 @@ See [MemeFactory.Samples](MemeFactory.Samples)
 
 ## Matting image using AI
 ```xml
-<PackageReference Include="MemeFactory.Matting.Onnx" Version="1.0.0-alpha.28" />
+<PackageReference Include="MemeFactory.Matting.Onnx" Version="1.0.0-alpha.37" />
 ```
 ```csharp
 IAsyncEnumerable<Frame> frames;
@@ -41,9 +42,43 @@ await result.Image.SaveAsync("result." + result.Extension, result.Encoder);
 ```
 See also: [RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0) / [ModNet](https://github.com/ZHKKKe/MODNet) / [PaddleSeg/Matting](https://github.com/PaddlePaddle/PaddleSeg/tree/develop/Matting) 
 
-> Note: Reference at least one ONNX runtime native package in your project.
+> ⚠ Note: This package does not include any ONNX runtime package,
+> please reference at least one ONNX runtime native package in your project.
 
-## Built-in Processors 
+## Processing image with ffmpeg
+```xml
+<PackageReference Include="MemeFactory.Ffmpeg" Version="1.0.0-alpha.37" />
+```
+```csharp
+IAsyncEnumerable<Frame> frames;
+
+frames.SpeedUp(1.0f);
+```
+> ⚠ Note: This package does not include any ffmpeg library or executable file,
+> please install ffmpeg on your system. 
+
+## Processing image with OpenCv
+```xml
+<PackageReference Include="MemeFactory.OpenCv" Version="1.0.0-alpha.37" />
+```
+```csharp
+IAsyncEnumerable<Frame> frames;
+
+frames.OpenCv(MemeCv.RadialBlur())
+```
+> ⚠ Note: This package does not include any OpenCV binary file,
+> please reference `OpenCvSharp4` runtime package in your project.
+
+
+### MemeFactory.OpenCv built-in filters
+> Use `MemeCv` to access all built-in filters
+
+| Method       | Description                                                            |
+|--------------|------------------------------------------------------------------------|
+| RadialBlur   | Apply a radial blur filter to every frame                              |
+| FloodMatting | Select a point and matting image using the color of the selected point |
+
+## Core built-in filters 
 
 | Method                | Description                                                                                                                  |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------|
@@ -74,4 +109,4 @@ See also: [RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0) / [ModNet](https://
 | Saturate              | Adjust the saturate of every frame                                                                                           |
 | Lightness             | Adjust the lightness of every frame                                                                                          |
 | Brightness            | Adjust the rightness of every frame                                                                                          |
-
+| ProjectiveTransform   | Apply projective transform matrix to every frame                                                                             |
