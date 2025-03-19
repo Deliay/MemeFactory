@@ -27,7 +27,7 @@ public static class Composers
                 {
                     Size = sizer(f),
                     Mode = ResizeMode.Stretch,
-                    Sampler = LanczosResampler.Lanczos3,
+                    Sampler = new BicubicResampler(),
                 }));
                 var poser = imagePos(newImage);
                 frameCtx.DrawImage(newImage, poser(f), 1.0f);

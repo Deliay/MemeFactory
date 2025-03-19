@@ -12,7 +12,7 @@ public static class TensorImageProcessExtensions
     public static Tensor<float> NormalizeImageToTensor(this Image<Rgba32> image, ModelConfiguration model)
     {
         using var copiedImage = image.Clone(c => c.Resize(model.InputWidth, model.InputHeight,
-            LanczosResampler.Lanczos3));
+            new BicubicResampler()));
 
         var tensor = new DenseTensor<float>([1, 3, model.InputHeight, model.InputWidth]);
         
@@ -44,7 +44,7 @@ public static class TensorImageProcessExtensions
                 mask[x, y] = new Rgba32(intensity, intensity, intensity, 255);
             }
         });
-        mask.Mutate(x => x.Resize(src.Width, src.Height, LanczosResampler.Lanczos3));
+        mask.Mutate(x => x.Resize(src.Width, src.Height, new BicubicResampler()));
         return mask;
     }
 
