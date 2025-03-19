@@ -176,4 +176,39 @@ public static class Transformers
             return f;
         });
     }
+    
+    public static IAsyncEnumerable<Frame> Tile(this IAsyncEnumerable<Frame> seq, (int x, int y) tileSize)
+    {
+        return seq.Select(f =>
+        {
+            var canvasWidth = f.Image.Width * Math.Min(tileSize.x, 2);
+            var canvasHeight = f.Image.Height * Math.Min(tileSize.y, 2);
+
+            var preImageSize = new Size(canvasWidth / tileSize.x, canvasHeight / tileSize.y);
+
+            var canvas = new Image<Rgba32>(canvasWidth, canvasHeight);
+
+            f.Image.Mutate(x => x.Resize(new ResizeOptions()
+            {
+                Size = preImageSize,
+                Sampler = new BicubicResampler(),
+            }));
+
+            canvas.Mutate(x =>
+            {
+                for (var w = 0; w < tileSize.x; w++)
+                {
+                    for (var h = 0; h < tileSize.y; h++)
+                    {
+                        var point = new Point(w * preImageSize.Width, h * preImageSize.Height);
+
+                        x.DrawImage(f.Image, point, 1.0f);
+                    }
+                }
+            });
+
+            using var oldFrame = f;
+            return oldFrame with { Image = canvas };
+        });
+    }
 }
