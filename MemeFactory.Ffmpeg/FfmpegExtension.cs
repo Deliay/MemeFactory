@@ -29,7 +29,7 @@ public static class FfmpegExtension
     public static async ValueTask<TempFile> CreateTempFile(MemeResult memeResult,
         CancellationToken cancellationToken = default)
     {
-        var path = Path.GetTempFileName();
+        var path = Path.GetTempFileName() + "." + memeResult.Extension;
         await memeResult.Image.SaveAsync(path, cancellationToken);
         
         return new TempFile(path);
