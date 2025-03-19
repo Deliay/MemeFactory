@@ -6,7 +6,8 @@ namespace MemeFactory.Ffmpeg;
 public static class FfmpegFilterExtensions
 {
     public static IAsyncEnumerable<Frame> SpeedUp(this IAsyncEnumerable<Frame> frames, float timeScale,
-        FFOptions? ffOptions = null,CancellationToken cancellationToken = default)
+        FFOptions? ffOptions = null,
+        CancellationToken cancellationToken = default)
 
     {
         return frames.FfmpegToGif(v => v.Arguments.Add(new SetPtsVideoFilter(timeScale)),
