@@ -15,7 +15,8 @@ public static class OpenCvFrameExtensions
         {
             using var ms = new MemoryStream();
             await frame.Image.SaveAsPngAsync(ms, cancellationToken);
-            ms.Position = 0;
+            ms.Seek(0, SeekOrigin.Begin);
+            
             using var mat = Cv2.ImDecode(ms.GetBuffer(), ImreadModes.Color);
             using var newMat = await transform(mat);
             Cv2.ImEncode(".png", newMat, out var buf);

@@ -23,15 +23,15 @@ public static class FfmpegExtension
         
         using var gif = await frames.AutoComposeAsync(cancellationToken);
         await gif.Image.SaveAsync(inputStream, gif.Encoder, cancellationToken);
-        inputStream.Position = 0;
-
+        
+        inputStream.Seek(0, SeekOrigin.Begin);
         await FFMpegArguments
             .FromPipeInput(new StreamPipeSource(inputStream), inputOptions)
             .OutputToPipe(new StreamPipeSink(outputStream), outputOptions)
             .CancellableThrough(cancellationToken)
             .ProcessAsynchronously(ffMpegOptions: ffOptions);
         
-        outputStream.Position = 0;
+        outputStream.Seek(0, SeekOrigin.Begin);
         await foreach (var frame in outputResultMapper(outputStream))
         {
             yield return frame;
