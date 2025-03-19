@@ -14,6 +14,7 @@ public static class FfmpegExtension
         Action<FFMpegArgumentOptions> inputOptions,
         Action<FFMpegArgumentOptions> outputOptions,
         Func<MemoryStream, IAsyncEnumerable<Frame>> outputResultMapper,
+        FFOptions? ffOptions = null,
     [EnumeratorCancellation] CancellationToken cancellationToken = default)
 
     {
@@ -24,13 +25,11 @@ public static class FfmpegExtension
         await gif.Image.SaveAsync(inputStream, gif.Encoder, cancellationToken);
         inputStream.Position = 0;
 
-        var ffMpegArgumentProcessor = FFMpegArguments
+        await FFMpegArguments
             .FromPipeInput(new StreamPipeSource(inputStream), inputOptions)
             .OutputToPipe(new StreamPipeSink(outputStream), outputOptions)
-            .CancellableThrough(cancellationToken);
-        Console.WriteLine(ffMpegArgumentProcessor.Arguments);
-        await ffMpegArgumentProcessor
-            .ProcessAsynchronously();
+            .CancellableThrough(cancellationToken)
+            .ProcessAsynchronously(ffMpegOptions: ffOptions);
         
         outputStream.Position = 0;
         await foreach (var frame in outputResultMapper(outputStream))
@@ -43,6 +42,7 @@ public static class FfmpegExtension
     public static IAsyncEnumerable<Frame> FfmpegToGif(this IAsyncEnumerable<Frame> frames,
         Action<VideoFilterOptions>? vfOptions = null, Action<FFMpegArgumentOptions>? outputOptions = null,
         Action<FFMpegArgumentOptions>? inputOptions = null,
+        FFOptions? ffOptions = null,
         CancellationToken cancellationToken = default)
     {
         return frames.Ffmpeg(input =>
@@ -62,7 +62,7 @@ public static class FfmpegExtension
             output.WithCustomArgument(vfArgDefault + "\"");
             output.WithFramerate(24);
             output.ForceFormat("gif");
-        }, stream => MapToSequence(stream, cancellationToken), cancellationToken);
+        }, stream => MapToSequence(stream, cancellationToken), ffOptions, cancellationToken);
     }
 
     private static async IAsyncEnumerable<Frame> MapToSequence(Stream stream,
