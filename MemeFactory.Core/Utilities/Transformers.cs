@@ -10,6 +10,7 @@ namespace MemeFactory.Core.Utilities;
 public static class Transformers
 {
     public static async IAsyncEnumerable<Frame> Rotation(this IAsyncEnumerable<Frame> frames, int circleTimes = 16,
+        int rotationDirection = 1,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
 
     {
@@ -29,6 +30,8 @@ public static class Transformers
             total -= 1;
         }
 
+        deg *= rotationDirection;
+        
         var baseSize = allFrames[0].Image.Size;
         foreach (var frame in allFrames.Loop(total).ToList()) using (frame)
         {
