@@ -19,7 +19,7 @@ public static class FfmpegExtension
             {
                 File.Delete(Path);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }

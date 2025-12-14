@@ -9,3 +9,5 @@ public delegate ValueTask<Frame> FrameMerger(Frame a, Frame b,
     CancellationToken cancellationToken = default);
 
 public delegate IAsyncEnumerable<(Frame a, Frame b)> SequenceMerger(IAsyncEnumerable<Frame> a);
+
+public delegate IAsyncEnumerable<(Frame a, T b)> GenericSequenceMerger<T>(IAsyncEnumerable<Frame> a);

@@ -45,14 +45,14 @@ public static class Frames
         FrameProcessor processor, CancellationToken cancellationToken = default)
     {
         return frames
-            .SelectAwait((f) => processor(f, cancellationToken))
+            .Select((Frame f, CancellationToken _) => processor(f, cancellationToken))
             .OrderBy(f => f.Sequence);
     }
 
     public static IAsyncEnumerable<Frame> FrameBasedZipSequence(this IAsyncEnumerable<Frame> meme,
         SequenceMerger sequenceMerger, FrameMerger frameMerger, CancellationToken cancellationToken = default)
     {
-        return sequenceMerger(meme).SelectAwait(async tuple =>
+        return sequenceMerger(meme).Select(async ((Frame a, Frame b) tuple, CancellationToken _) =>
         {
             using var disposeB = tuple.b;
             return await frameMerger(tuple.a, disposeB, cancellationToken);
@@ -108,6 +108,25 @@ public static class Frames
             foreach (var item in cache)
             {
                 yield return new Frame(index++, item.Image.Clone((_) => {}));
+            }
+        }
+    }
+    
+    public static IEnumerable<T> Loop<T>(this IEnumerable<T> source, Func<T, T> duplicator, int times = 999)
+    {
+        List<T> cache = [];
+        foreach (var item in source)
+        {
+            cache.Add(item);
+            yield return item;
+        }
+
+        var currentTimes = 0;
+        while (currentTimes++ < times)
+        {
+            foreach (var item in cache)
+            {
+                yield return duplicator(item);
             }
         }
     }
